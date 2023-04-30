@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Validate Email
+    </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Bulk Email Address Checker</h1>
+        <form id="form">
+            <div class="form-group">
+                <label for="emails">Enter Emails: (One Per Line)</label>
+                <textarea class="form-control" rows="10" cols="20" id="emails" placeholder="Email names"
+                    required></textarea>
+            </div>
+            <div class="form-group">
+                <button id="button" class="btn btn-block btn-danger">
+                    Validate Emails
+                </button>
+            </div>
+        </form>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Email Address</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody id="body"></tbody>
+            </table>
+        </div>
+        <br /><br />
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $("#form").submit(function (e) {
+        e.preventDefault();
+
+        var emails = $("#emails").val().split("\n");
+
+        $("#body").empty();
+
+        $("#button").text("Checking Emails Please Wait");
+
+        $("#button").prop("disabled", "true");
+
+        console.log(emails);
+
+        emails.forEach((email) => {
+
+
+            $.ajax({
+                method: "POST",
+                url: "/validateemail",
+                data: { email: email },
+                success: function (data) {
+                    console.log(data);
+
+                    $("#button").text("Validate Email");
+
+                    document.getElementById("button").disabled = false;
+
+                    if (data.message) {
+
+                        $("#body").append(`
+                  <tr>
+                     <td>${data.email}</td>
+                     <td class="alert alert-success">Valid Email</td> 
+                  </tr>
+
+                  `);
+                    } else {
+
+                        $("#body").append(`
+                  <tr>
+                     <td>${data.email}</td>
+                     <td class="alert alert-danger">Invalid Email</td> 
+                  </tr>
+
+                  `);
+                    }
+                },
+            })
+        })
+    });
+</script>
+
+</html>
